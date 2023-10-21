@@ -61,8 +61,7 @@ system = MiniSystem(
     reverse_x_y=(False, False),
     if_UAV_pos_state = True,
     reward_design = REWARD_DESIGN,
-    project_name = project_name,
-    step_num = step_num
+    project_name = project_name
     )
 
 if_Theta_fixed = False
