@@ -75,7 +75,10 @@ class MiniSystem(object):
         self.border = [(-25,25), (0, 50)]
         # 1.init entities: 1 UAV, 1 RIS, many users and attackers
         self.data_manager = DataManager(file_path='./data', project_name = project_name, \
-        store_list = ['beamforming_matrix', 'reflecting_coefficient', 'UAV_state', 'user_capacity', 'secure_capacity', 'attaker_capacity','G_power', 'reward','UAV_movement'])
+                                        store_list = ['beamforming_matrix', 'reflecting_coefficient', \
+                                                      'UAV_state', 'user_capacity', 'secure_capacity', \
+                                                      'attaker_capacity','G_power', 'reward','UAV_movement']
+                                       )
         # 1.1 init UAV position and beamforming matrix
         self.UAV = UAV(
             coordinate=self.data_manager.read_init_location('UAV', 0), 
