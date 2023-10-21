@@ -65,12 +65,11 @@ class DataManager(object):
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['z'][index])
             # direction and angle
             try:
-                temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index])
-                temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index])
+                delta_d = pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index]
+                direction_fai_coef = pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index]
+                return np.array(temp), delta_d, direction_fai_coef
             except:
-                pass # because not all entity moves
-                
-            return np.array(temp)
+                return np.array(temp)
         else:
             return None
     
