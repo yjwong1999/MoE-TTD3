@@ -62,7 +62,7 @@ class MiniSystem(object):
     """
     def __init__(self, UAV_num = 1, RIS_num = 1, user_num = 1, attacker_num = 1, fre = 28e9, \
                  RIS_ant_num = 16, UAV_ant_num=8, if_dir_link = 1, if_with_RIS = True, \
-                 if_move_users = True, if_move_attackers = True, if_movements = True, reverse_x_y = (True, True), \
+                 if_move_users = True, if_move_attackers = True, if_movements = True, \
                  if_UAV_pos_state = True, reward_design = 'ssr', project_name = None):
         self.if_dir_link = if_dir_link
         self.if_with_RIS = if_with_RIS
@@ -70,7 +70,6 @@ class MiniSystem(object):
         self.if_move_attackers = if_move_attackers
         self.if_movements = if_movements
         self.if_UAV_pos_state = if_UAV_pos_state
-        self.reverse_x_y = reverse_x_y
         self.user_num = user_num
         self.attacker_num = attacker_num
         self.border = [(-25,25), (0, 50)]
