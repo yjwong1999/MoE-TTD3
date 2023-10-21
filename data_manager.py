@@ -63,15 +63,19 @@ class DataManager(object):
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['x'][index])
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['y'][index])
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['z'][index])
-            # direction and angle
-            try:
-                delta_d = pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index]
-                direction_fai_coef = pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index]
-                return np.array(temp), delta_d, direction_fai_coef
-            except:
-                return np.array(temp)
+            return np.array(temp)
         else:
-            return None
+            assert False
+            
+    def read_movement(self, entity_type = 'user', index = 0):
+        temp = []
+        if entity_type == 'user' or 'attacker':
+            # movement config
+            delta_d = pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index]
+            direction_fai_coef = pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index]
+            return delta_d, direction_fai_coef
+        else:
+            assert False
     
     def store_data(self, row_data, value_name):
         """
