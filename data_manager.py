@@ -14,11 +14,12 @@ class DataManager(object):
                  file_path = './data', project_name = None, store_path = './data/storage'):
         # 1 init location data
         self.store_list = store_list
-        self.init_data_file = file_path + '/init_location.xlsx'
+
         if project_name is None:
-            self.time_stemp = time.strftime('/%Y-%m-%d %H_%M_%S',time.localtime(time.time()))
-            self.store_path = store_path + self.time_stemp 
+            self.init_data_file = file_path + '/init_location.xlsx'
+            self.store_path = store_path + time.strftime('/%Y-%m-%d %H_%M_%S',time.localtime(time.time()))
         else:
+            self.init_data_file = file_path + f'/init/{project_name}_init_location.xlsx'
             dir_name = store_path + '/' + project_name
             if os.path.isdir(dir_name):
                 shutil.rmtree(dir_name)
