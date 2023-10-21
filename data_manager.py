@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io
 import pandas as pd
-import os
+import os, shutil
 import time, csv
 
 class DataManager(object):
@@ -19,14 +19,11 @@ class DataManager(object):
             self.time_stemp = time.strftime('/%Y-%m-%d %H_%M_%S',time.localtime(time.time()))
             self.store_path = store_path + self.time_stemp 
         else:
-            for i in range(1, 100, 1):
-                if i == 1:
-                    dir_name = store_path + '/' + project_name
-                else:
-                    dir_name = store_path + '/' + project_name + f'_{i}'
-                if not os.path.isdir(dir_name):
-                    self.store_path = dir_name
-                    break
+            dir_name = store_path + '/' + project_name
+            if os.path.isdir(dir_name):
+                shutil.rmtree(dir_name)
+            self.store_path = dir_name
+
         os.makedirs(self.store_path) 
         # self.writer = pd.ExcelWriter(self.store_path + '/simulation_result.xlsx', engine='openpyxl')  # pylint: disable=abstract-class-instantiated 
         self.simulation_result_dic = {}
