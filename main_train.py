@@ -56,6 +56,7 @@ system = MiniSystem(
     if_dir_link=1,
     if_with_RIS=True,
     if_move_users=True,
+    if_move_attackers=True,
     if_movements=True,
     reverse_x_y=(False, False),
     if_UAV_pos_state = True,
