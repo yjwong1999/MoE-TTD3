@@ -198,7 +198,7 @@ system.data_manager.save_meta_data(meta_dic)
 
 print("***********************traning information******************************")
 
-
+np.random.seed(12345)
 while episode_cnt < episode_num:
     # 1 reset the whole system
     system.reset()
