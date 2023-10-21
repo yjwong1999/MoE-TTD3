@@ -152,8 +152,8 @@ class User(object):
         
         ########################
         # new
-        delta_x = delta_d * math.cos(direction_fai_coef)
-        delta_y = delta_d * math.sin(direction_fai_coef)
+        delta_x = self.delta_d * math.cos(self.direction_fai_coef)
+        delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
         if self.temp_x is None:
             self.temp_x = self.coordinate[0] + delta_x
@@ -179,13 +179,6 @@ class User(object):
             self.coordinate[1] = self.temp_y
         ########################
 
-    '''
-    def move(self, distance_delta_d, direction_fai):
-        """
-        preform the 2D movement every step
-        """
-        self.update_coordinate(distance_delta_d, direction_fai)
-    '''
         
 class Attacker(object):
     """
@@ -245,8 +238,8 @@ class Attacker(object):
 
         ########################
         # new
-        delta_x = delta_d * math.cos(direction_fai_coef)
-        delta_y = delta_d * math.sin(direction_fai_coef)
+        delta_x = self.delta_d * math.cos(self.direction_fai_coef)
+        delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
         if self.temp_x is None:
             self.temp_x = self.coordinate[0] + delta_x
@@ -271,11 +264,3 @@ class Attacker(object):
         else:
             self.coordinate[1] = self.temp_y
         ########################
-
-    '''
-    def move(self, distance_delta_d, direction_fai):
-        """
-        preform the 2D movement every step
-        """
-        self.update_coordinate(distance_delta_d, direction_fai)
-    '''
