@@ -118,40 +118,17 @@ class User(object):
         self.comprehensive_channel = 0
         # init receive noise sigma in dB
         self.noise_power = -114
-        
-        
-        #################
-        # new
-        # this is to prevent the user from going out of the boundary (will reflect the trajectory)
-        self.temp_x = None
-        self.temp_y = None
-        #################
 
     def reset(self, coordinate):
         """
         reset user coordinate
         """
         self.coordinate = coordinate
-        #################
-        # new
-        self.temp_x = None
-        self.temp_y = None
-        #################
     
     def update_coordinate(self):
-        """
-        used in function move to update UAV cordinate
-        """
-        
-        """
-        delta_x = distance_delta_d * math.cos(direction_fai)
-        delta_y = distance_delta_d * math.sin(direction_fai)
-        self.coordinate[0] += delta_x
-        self.coordinate[1] += delta_y
-        """
-        
-        ########################
-        # new
+        '''
+        moves and update coordinate
+        '''
         delta_x = self.delta_d * math.cos(self.direction_fai_coef)
         delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
@@ -177,7 +154,6 @@ class User(object):
             self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
         else:
             self.coordinate[1] = self.temp_y
-        ########################
 
         
 class Attacker(object):
@@ -207,12 +183,6 @@ class Attacker(object):
         # init receive noise sigma in dBmW
         self.noise_power = -114
 
-        #################
-        # new
-        self.temp_x = None
-        self.temp_y = None
-        #################
-
     def reset(self, coordinate):
         """
         reset attacker coordinate
@@ -226,18 +196,9 @@ class Attacker(object):
         #################
 
     def update_coordinate(self):
-        """
-        used in function move to update UAV cordinate
-        """
         '''
-        delta_x = distance_delta_d * math.cos(direction_fai)
-        delta_y = distance_delta_d * math.sin(direction_fai)
-        self.coordinate[0] += delta_x
-        self.coordinate[1] += delta_y
+        moves and update coordinate
         '''
-
-        ########################
-        # new
         delta_x = self.delta_d * math.cos(self.direction_fai_coef)
         delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
@@ -263,4 +224,3 @@ class Attacker(object):
             self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
         else:
             self.coordinate[1] = self.temp_y
-        ########################
