@@ -137,7 +137,7 @@ class User(object):
         self.temp_y = None
         #################
     
-    def update_coordinate(self, distance_delta_d, direction_fai):
+    def update_coordinate(self):
         """
         used in function move to update UAV cordinate
         """
@@ -151,8 +151,8 @@ class User(object):
         
         ########################
         # new
-        delta_x = distance_delta_d * math.cos(direction_fai)
-        delta_y = distance_delta_d * math.sin(direction_fai)
+        delta_x = delta_d * math.cos(direction_fai_coef)
+        delta_y = delta_d * math.sin(direction_fai_coef)
         
         if self.temp_x is None:
             self.temp_x = self.coordinate[0] + delta_x
@@ -178,11 +178,13 @@ class User(object):
             self.coordinate[1] = self.temp_y
         ########################
 
+    '''
     def move(self, distance_delta_d, direction_fai):
         """
         preform the 2D movement every step
         """
         self.update_coordinate(distance_delta_d, direction_fai)
+    '''
         
 class Attacker(object):
     """
@@ -216,17 +218,50 @@ class Attacker(object):
         """
         self.coordinate = coordinate
 
-    def update_coordinate(self, distance_delta_d, direction_fai):
+    def update_coordinate(self):
         """
         used in function move to update UAV cordinate
         """
+        '''
         delta_x = distance_delta_d * math.cos(direction_fai)
         delta_y = distance_delta_d * math.sin(direction_fai)
         self.coordinate[0] += delta_x
         self.coordinate[1] += delta_y
+        '''
 
+        ########################
+        # new
+        delta_x = delta_d * math.cos(direction_fai_coef)
+        delta_y = delta_d * math.sin(direction_fai_coef)
+        
+        if self.temp_x is None:
+            self.temp_x = self.coordinate[0] + delta_x
+            self.temp_y = self.coordinate[1] + delta_y
+        else:
+            self.temp_x += delta_x
+            self.temp_y += delta_y
+        
+        # boundary check for x axis
+        if self.temp_x <= - 25:
+            self.coordinate[0] = -25 - (25 + self.temp_x)
+        elif self.temp_x >= 25:
+            self.coordinate[0] = 25 -  (self.temp_x - 25 )
+        else:
+            self.coordinate[0] = self.temp_x
+
+        # boundary check for y axis
+        if self.temp_y <= 0:
+            self.coordinate[1] = 0 - (0 + self.temp_y)
+        elif self.temp_y >= 50:
+            self.coordinate[1] = 50 -  (self.temp_y - 50 )
+        else:
+            self.coordinate[1] = self.temp_y
+        ########################
+
+    '''
     def move(self, distance_delta_d, direction_fai):
         """
         preform the 2D movement every step
         """
         self.update_coordinate(distance_delta_d, direction_fai)
+    '''
