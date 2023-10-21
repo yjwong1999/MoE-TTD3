@@ -171,8 +171,6 @@ print("UAV_ant_num:     "+str(system.UAV.ant_num))
 meta_dic['system_UAV_ant_num'] = system.UAV.ant_num
 print("if_movements:    "+str(system.if_movements))
 meta_dic['system_if_movements'] = system.if_movements
-print("reverse_x_y:     "+str(system.reverse_x_y))
-meta_dic['system_reverse_x_y'] = system.reverse_x_y
 print("if_UAV_pos_state:"+str(system.if_UAV_pos_state))
 meta_dic['if_UAV_pos_state'] = system.if_UAV_pos_state
 
