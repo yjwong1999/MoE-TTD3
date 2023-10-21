@@ -214,11 +214,23 @@ class Attacker(object):
         # init receive noise sigma in dBmW
         self.noise_power = -114
 
+        #################
+        # new
+        self.temp_x = None
+        self.temp_y = None
+        #################
+
     def reset(self, coordinate):
         """
         reset attacker coordinate
         """
         self.coordinate = coordinate
+        #################
+        # new
+        # this is to prevent the user from going out of the boundary (will reflect the trajectory)
+        self.temp_x = None
+        self.temp_y = None
+        #################
 
     def update_coordinate(self):
         """
