@@ -84,9 +84,9 @@ def main():
         worksheets[4].append([0, 0.0001, 25, 50])
         
         # Save the workbook
-        workbook.save(f"data/init/{task_idx}_init_location.xlsx")
+        workbook.save(f"data/init/{task_idx + 1}_init_location.xlsx")
 
-    print('\nFinished creating configs!')
+    print('Finished creating configs!')
 
 
 if __name__ == "__main__":
