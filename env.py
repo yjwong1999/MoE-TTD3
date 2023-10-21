@@ -149,11 +149,6 @@ class MiniSystem(object):
         # 4 draw system
         self.render_obj = Render(self)   
         
-        #############################
-        # new
-        self.user_default_delta_d = 0.2
-        self.user_default_direction_fai_coef = -1/2
-        #############################
         
     def reset(self):
         """
@@ -201,7 +196,6 @@ class MiniSystem(object):
         # 0 update render
         self.render_obj.t_index += 1
 
-        
         # 1 update entities coord
         # users
         if self.if_move_users:
