@@ -8,15 +8,17 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--drl', type = str, required = True, default='td3', help="which drl algo would you like to choose ['ddpg', 'td3']")
 parser.add_argument('--reward', type = str, required = True, default='see', help="which reward would you like to implement ['ssr', 'see']")
-parser.add_argument('--seeds', type = int, required = False, default=None,  nargs='+', help="what seed(s) would you like to use for DRL 1 and 2, please provide in one or two int")
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
+parser.add_argument('--seeds', type = int, required = False, default=None,  nargs='+', help="what seed(s) would you like to use for DRL 1 and 2, please provide in one or two int")
+parser.add_argument('--project-name', type = str, required = False, default=None, help="project name")
 parser.add_argument('--trained-uav', default=False, action='store_true', help='use trained uav instead of retraining')
 
 args = parser.parse_args()
 DRL_ALGO = args.drl
 REWARD_DESIGN = args.reward
-SEEDS = args.seeds
 EPISODE_NUM = args.ep_num
+SEEDS = args.seeds
+PROJECT_NAME = args.project_name
 TRAINED_UAV = args.trained_uav
 
 # process the argument
@@ -40,9 +42,12 @@ import torch
 # 1 init system model
 episode_num = EPISODE_NUM # recommend to be 300
 episode_cnt = 0
-step_num = 100
+step_num = 20
 
-project_name = f'trained_uav/{DRL_ALGO}_{REWARD_DESIGN}' if TRAINED_UAV else f'scratch/{DRL_ALGO}_{REWARD_DESIGN}'
+if PROJECT_NAME is None:
+    project_name = f'trained_uav/{DRL_ALGO}_{REWARD_DESIGN}' if TRAINED_UAV else f'scratch/{DRL_ALGO}_{REWARD_DESIGN}'
+else:
+    project_name = PROJECT_NAME
 
 system = MiniSystem(
     user_num=2,
