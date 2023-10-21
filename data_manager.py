@@ -58,7 +58,7 @@ class DataManager(object):
 
     def read_init_location(self, entity_type = 'user', index = 0):
         temp = []
-        if entity_type == 'user' or 'attacker' or 'RIS' or 'RIS_norm_vec' or 'UAV':
+        if entity_type in ['user', 'attacker', 'RIS', 'RIS_norm_vec', 'UAV']:
             # xyz
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['x'][index])
             temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['y'][index])
@@ -69,7 +69,7 @@ class DataManager(object):
             
     def read_movement(self, entity_type = 'user', index = 0):
         temp = []
-        if entity_type == 'user' or 'attacker':
+        if entity_type in ['user', 'attacker']:
             # movement config
             delta_d = pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index]
             direction_fai_coef = pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index]
