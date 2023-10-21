@@ -94,7 +94,7 @@ class User(object):
     """
     user with single antenas
     """
-    def __init__(self, coordinate, delta_d, direction_fai_coef,\
+    def __init__(self, coordinate, delta_d, direction_fai_coef, border, \
                  index, ant_num = 1, ant_type = 'single'):
         """
         coordinate is the init coordinate of user, meters, np.array
@@ -104,6 +104,7 @@ class User(object):
         self.coordinate = coordinate
         self.delta_d = delta_d
         self.direction_fai_coef = direction_fai_coef
+        self.border = border
         self.ant_num = ant_num
         self.ant_type = ant_type
         self.index = index
@@ -190,7 +191,7 @@ class Attacker(object):
     """
     Attacker with single antenas
     """
-    def __init__(self, coordinate, delta_d, direction_fai_coef,\
+    def __init__(self, coordinate, delta_d, direction_fai_coef, border, \
                  index, ant_num = 1, ant_type= 'single'):
         """
         coordinate is the init coordinate of Attacker, meters, np.array
@@ -200,6 +201,7 @@ class Attacker(object):
         self.coordinate = coordinate
         self.delta_d = delta_d
         self.direction_fai_coef = direction_fai_coef
+        self.border = border
         self.ant_num = ant_num
         self.ant_type = ant_type
         self.index = index
