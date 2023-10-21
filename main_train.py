@@ -58,7 +58,6 @@ system = MiniSystem(
     if_move_users=True,
     if_move_attackers=True,
     if_movements=True,
-    reverse_x_y=(False, False),
     if_UAV_pos_state = True,
     reward_design = REWARD_DESIGN,
     project_name = project_name
