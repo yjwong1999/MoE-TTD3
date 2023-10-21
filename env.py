@@ -199,41 +199,38 @@ class MiniSystem(object):
         test step only move UAV and update channel
         """
         # 0 update render
-        
         self.render_obj.t_index += 1
-        # 1 update entities
-        
-        if self.if_move_users:
-            self.user_list[0].update_coordinate(self.user_default_delta_d, self.user_default_direction_fai_coef * math.pi) # new
-            self.user_list[1].update_coordinate(self.user_default_delta_d, self.user_default_direction_fai_coef * math.pi) # new
 
+        
+        # 1 update entities coord
+        # users
+        if self.if_move_users:
+            for user_idx in range(self.user_num):
+                self.user_list[user_idx].update_coordinate()
+        # attackers
+        if self.if_move_attackers:
+            for attacker_idx in range(self.attacker_num):
+                self.attacker_list[attacker_idx].update_coordinate()
+        # uav
         if self.if_movements:
             move_x = action_0 * self.UAV.max_movement_per_time_slot
             move_y = action_1 * self.UAV.max_movement_per_time_slot
             
             ######################################################
-            # new for energy 
+            # new for UAV energy 
             v_t = (move_x ** 2 + move_y ** 2) ** 0.5
             #self.data_manager.store_data([v_t],'velocity')
             ######################################################
-
-            if self.reverse_x_y[0]:
-                move_x = -move_x
-            
-            if self.reverse_x_y[1]:
-                move_y = -move_y
                 
             self.UAV.coordinate[0] +=move_x
             self.UAV.coordinate[1] +=move_y
             self.data_manager.store_data([move_x, move_y], 'UAV_movement')
         else:
-            set_pos_x = map_to(set_pos_x, (-1, 1), self.border[0])
-            set_pos_y = map_to(set_pos_y, (-1, 1), self.border[1])
             self.UAV.coordinate[0] = set_pos_x
             self.UAV.coordinate[1] = set_pos_y
 
-        # 2 update channel CSI
         
+        # 2 update channel CSI
         for h in self.h_U_k + self.h_U_p + self.h_R_k + self.h_R_p:
             h.update_CSI()
         # !!! test to make direct link zero
@@ -244,29 +241,31 @@ class MiniSystem(object):
             self.H_UR.channel_matrix = np.mat(np.zeros((self.RIS.ant_num, self.UAV.ant_num)), dtype=complex)
         else:
             self.H_UR.update_CSI()
+
+        
         # 3 update beamforming matrix & reflecting phase shift
         """
         self.UAV.G = G
         self.RIS.Phi = Phi
         """
         self.UAV.G = convert_list_to_complex_matrix(G, (self.UAV.ant_num, self.user_num)) * math.pow(self.power_factor, 0.5)
-        
-        # fix beamforming matrix
-        #self.UAV.G = np.mat(np.ones((self.UAV.ant_num, self.user_num), dtype=complex), dtype=complex) * math.pow(self.power_factor, 0.5)
         if self.if_with_RIS:
             self.RIS.Phi = convert_list_to_complex_diag(Phi, self.RIS.ant_num)
+
+        
         # 4 update channel capacity in every user and attacker
         self.update_channel_capacity()
+
         # 5 store current system state to .mat
         self.store_current_system_sate()
+
         # 6 get new state
         new_state = self.observe()
+
         # 7 get reward
         reward = self.reward()
-        
-        # 7.1 reward with energy efficiency
         ######################################################
-        # new for energy 
+        # new for energy efficiency
         if self.reward_design == 'see':
             # new for see
             energy = energy_raw = get_energy_consumption(v_t)
@@ -276,9 +275,10 @@ class MiniSystem(object):
             if reward > 0:
                 reward += energy_penalty
         ######################################################
+
         
         # 8 calculate if UAV is cross the bourder
-        reward = math.tanh(reward) # new for energy (ori not commented)
+        reward = math.tanh(reward)
         done = False
         x, y = self.UAV.coordinate[0:2]
         if x < self.border[0][0] or x > self.border[0][1]:
@@ -290,6 +290,7 @@ class MiniSystem(object):
         self.data_manager.store_data([reward],'reward')
         return new_state, reward, done, []
 
+    
     def reward(self):
         """
         used in function step to get the reward of current step
