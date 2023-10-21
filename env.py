@@ -74,12 +74,14 @@ class MiniSystem(object):
         self.user_num = user_num
         self.attacker_num = attacker_num
         self.border = [(-25,25), (0, 50)]
+                     
         # 1.init entities: 1 UAV, 1 RIS, many users and attackers
         self.data_manager = DataManager(file_path='./data', project_name = project_name, \
                                         store_list = ['beamforming_matrix', 'reflecting_coefficient', \
                                                       'UAV_state', 'user_capacity', 'secure_capacity', \
                                                       'attaker_capacity','G_power', 'reward','UAV_movement']
                                        )
+
         # 1.1 init UAV position and beamforming matrix
         self.UAV = UAV(
             coordinate=self.data_manager.read_init_location('UAV', 0), 
@@ -88,14 +90,15 @@ class MiniSystem(object):
         self.UAV.G = np.mat(np.ones((self.UAV.ant_num, user_num), dtype=complex), dtype=complex)
         self.power_factor = 100
         self.UAV.G_Pmax =  np.trace(self.UAV.G * self.UAV.G.H) * self.power_factor
+
         # 1.2 init RIS
         self.RIS = RIS(\
         coordinate=self.data_manager.read_init_location('RIS', 0), \
         coor_sys_z=self.data_manager.read_init_location('RIS_norm_vec', 0), \
         ant_num=RIS_ant_num)
+
         # 1.3 init users
-        self.user_list = []
-        
+        self.user_list = []      
         for i in range(user_num):
             user_coordinate = self.data_manager.read_init_location('user', i)
             user = User(coordinate=user_coordinate, index=i)
@@ -104,22 +107,16 @@ class MiniSystem(object):
 
         # 1.4 init attackers
         self.attacker_list = []
-        
         for i in range(attacker_num):
             attacker_coordinate = self.data_manager.read_init_location('attacker', i)
             attacker = Attacker(coordinate=attacker_coordinate, index=i)
             attacker.capacity = np.zeros((user_num))
             attacker.noise_power = -114
             self.attacker_list.append(attacker)
+
         # 1.5 generate the eavesdrop capacity array , shape: P X K
         self.eavesdrop_capacity_array= np.zeros((attacker_num, user_num))
-        
-        # 1.6 reward design
-        self.reward_design = reward_design # reward_design is ['ssr' or 'see']
 
-        # 1.7 step_num
-        self.step_num = step_num
-        
         # 2.init channel
         self.H_UR = mmWave_channel(self.UAV, self.RIS, fre)
         self.h_U_k = []
@@ -137,7 +134,13 @@ class MiniSystem(object):
         self.update_channel_capacity()
 
         # 4 draw system
-        self.render_obj = Render(self)      
+        self.render_obj = Render(self)   
+        
+        #############################
+        # new
+        self.user_default_delta_d = 0.2
+        self.user_default_direction_fai_coef = -1/2
+        #############################
         
     def reset(self):
         """
@@ -145,29 +148,36 @@ class MiniSystem(object):
         """
         # 1 reset UAV
         self.UAV.reset(coordinate=self.data_manager.read_init_location('UAV', 0))
+
         # 2 reset users
         for i in range(self.user_num):
             user_coordinate = self.data_manager.read_init_location('user', i)
             self.user_list[i].reset(coordinate=user_coordinate)
+
         # 3 reset attackers
         for i in range(self.attacker_num):
             attacker_coordinate = self.data_manager.read_init_location('attacker', i)
             self.attacker_list[i].reset(coordinate=attacker_coordinate)
+
         # 4 reset beamforming matrix
         self.UAV.G = np.mat(np.ones((self.UAV.ant_num, self.user_num), dtype=complex), dtype=complex)
         self.UAV.G_Pmax = np.trace(self.UAV.G * self.UAV.G.H) * self.power_factor
+
         # 5 reset reflecting coefficient
         """self.RIS = RIS(\
         coordinate=self.data_manager.read_init_location('RIS', 0), \
         coor_sys_z=self.data_manager.read_init_location('RIS_norm_vec', 0), \
         ant_num=16)"""
         self.RIS.Phi = np.mat(np.diag(np.ones(self.RIS.ant_num, dtype=complex)), dtype = complex)
+
         # 6 reset time
         self.render_obj.t_index = 0
+
         # 7 reset CSI
         self.H_UR.update_CSI()
         for h in self.h_U_k + self.h_U_p + self.h_R_k + self.h_R_p:
             h.update_CSI()
+
         # 8 reset capcaity
         self.update_channel_capacity()
 
@@ -181,8 +191,8 @@ class MiniSystem(object):
         # 1 update entities
         
         if self.if_move_users:
-            self.user_list[0].update_coordinate(0.2, -1/2 * math.pi)
-            self.user_list[1].update_coordinate(0.2, -1/2 * math.pi)
+            self.user_list[0].update_coordinate(self.user_default_delta_d, self.user_default_direction_fai_coef * math.pi) # new
+            self.user_list[1].update_coordinate(self.user_default_delta_d, self.user_default_direction_fai_coef * math.pi) # new
 
         if self.if_movements:
             move_x = action_0 * self.UAV.max_movement_per_time_slot
@@ -243,14 +253,13 @@ class MiniSystem(object):
         
         # 7.1 reward with energy efficiency
         ######################################################
-        if self.reward_design == 'see':
-            # new for see
-            energy = energy_raw = get_energy_consumption(v_t)
-            energy -= ENERGY_MIN
-            energy /= (ENERGY_MAX - ENERGY_MIN)
-            energy_penalty = -1 * 0.1 * abs(reward) * energy # -1 * 0.1 * reward * energy
-            if reward > 0:
-                reward += energy_penalty
+        # new for energy 
+        #energy = energy_raw = get_energy_consumption(v_t)
+        #energy -= ENERGY_MIN
+        #energy /= (ENERGY_MAX - ENERGY_MIN)
+        #energy_penalty = -1 * 0.1 * abs(reward) * energy # -1 * 0.1 * reward * energy
+        #if reward > 0:
+            # reward += energy_penalty
         ######################################################
         
         # 8 calculate if UAV is cross the bourder
