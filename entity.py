@@ -163,18 +163,18 @@ class User(object):
             self.temp_y += delta_y
         
         # boundary check for x axis
-        if self.temp_x <= - 25:
-            self.coordinate[0] = -25 - (25 + self.temp_x)
-        elif self.temp_x >= 25:
-            self.coordinate[0] = 25 -  (self.temp_x - 25 )
+        if self.temp_x <= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - self.temp_x)
+        elif self.temp_x >= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] -  (self.temp_x - self.border[0][1])
         else:
             self.coordinate[0] = self.temp_x
 
         # boundary check for y axis
-        if self.temp_y <= 0:
-            self.coordinate[1] = 0 - (0 + self.temp_y)
-        elif self.temp_y >= 50:
-            self.coordinate[1] = 50 -  (self.temp_y - 50 )
+        if self.temp_y <= self.border[1][0]:
+            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - self.temp_y)
+        elif self.temp_y >= self.border[1][1]:
+            self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
         else:
             self.coordinate[1] = self.temp_y
         ########################
@@ -244,18 +244,18 @@ class Attacker(object):
             self.temp_y += delta_y
         
         # boundary check for x axis
-        if self.temp_x <= - 25:
-            self.coordinate[0] = -25 - (25 + self.temp_x)
-        elif self.temp_x >= 25:
-            self.coordinate[0] = 25 -  (self.temp_x - 25 )
+        if self.temp_x <= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - self.temp_x)
+        elif self.temp_x >= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] -  (self.temp_x - self.border[0][1])
         else:
             self.coordinate[0] = self.temp_x
 
         # boundary check for y axis
-        if self.temp_y <= 0:
-            self.coordinate[1] = 0 - (0 + self.temp_y)
-        elif self.temp_y >= 50:
-            self.coordinate[1] = 50 -  (self.temp_y - 50 )
+        if self.temp_y <= self.border[1][0]:
+            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - self.temp_y)
+        elif self.temp_y >= self.border[1][1]:
+            self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
         else:
             self.coordinate[1] = self.temp_y
         ########################
