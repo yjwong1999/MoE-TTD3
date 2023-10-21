@@ -132,28 +132,24 @@ class User(object):
         delta_x = self.delta_d * math.cos(self.direction_fai_coef)
         delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
-        if self.temp_x is None:
-            self.temp_x = self.coordinate[0] + delta_x
-            self.temp_y = self.coordinate[1] + delta_y
-        else:
-            self.temp_x += delta_x
-            self.temp_y += delta_y
+        temp_x = self.coordinate[0] + delta_x
+        temp_y = self.coordinate[1] + delta_y
         
         # boundary check for x axis
-        if self.temp_x <= self.border[0][1]:
-            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - self.temp_x)
-        elif self.temp_x >= self.border[0][1]:
-            self.coordinate[0] = self.border[0][1] -  (self.temp_x - self.border[0][1])
+        if temp_x <= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - temp_x)
+        elif temp_x >= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] -  (temp_x - self.border[0][1])
         else:
-            self.coordinate[0] = self.temp_x
+            self.coordinate[0] = temp_x
 
         # boundary check for y axis
-        if self.temp_y <= self.border[1][0]:
-            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - self.temp_y)
-        elif self.temp_y >= self.border[1][1]:
-            self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
+        if temp_y <= self.border[1][0]:
+            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - temp_y)
+        elif temp_y >= self.border[1][1]:
+            self.coordinate[1] = self.border[1][1] - (temp_y - self.border[1][1])
         else:
-            self.coordinate[1] = self.temp_y
+            self.coordinate[1] = temp_y
 
         
 class Attacker(object):
@@ -202,25 +198,21 @@ class Attacker(object):
         delta_x = self.delta_d * math.cos(self.direction_fai_coef)
         delta_y = self.delta_d * math.sin(self.direction_fai_coef)
         
-        if self.temp_x is None:
-            self.temp_x = self.coordinate[0] + delta_x
-            self.temp_y = self.coordinate[1] + delta_y
-        else:
-            self.temp_x += delta_x
-            self.temp_y += delta_y
+        temp_x = self.coordinate[0] + delta_x
+        temp_y = self.coordinate[1] + delta_y
         
         # boundary check for x axis
-        if self.temp_x <= self.border[0][1]:
-            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - self.temp_x)
-        elif self.temp_x >= self.border[0][1]:
-            self.coordinate[0] = self.border[0][1] -  (self.temp_x - self.border[0][1])
+        if temp_x <= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] + (self.border[0][1] - temp_x)
+        elif temp_x >= self.border[0][1]:
+            self.coordinate[0] = self.border[0][1] -  (temp_x - self.border[0][1])
         else:
-            self.coordinate[0] = self.temp_x
+            self.coordinate[0] = temp_x
 
         # boundary check for y axis
-        if self.temp_y <= self.border[1][0]:
-            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - self.temp_y)
-        elif self.temp_y >= self.border[1][1]:
-            self.coordinate[1] = self.border[1][1] - (self.temp_y - self.border[1][1])
+        if temp_y <= self.border[1][0]:
+            self.coordinate[1] = self.border[1][0] + (self.border[1][0] - temp_y)
+        elif temp_y >= self.border[1][1]:
+            self.coordinate[1] = self.border[1][1] - (temp_y - self.border[1][1])
         else:
-            self.coordinate[1] = self.temp_y
+            self.coordinate[1] = temp_y
