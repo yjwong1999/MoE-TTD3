@@ -117,6 +117,9 @@ class MiniSystem(object):
         # 1.5 generate the eavesdrop capacity array , shape: P X K
         self.eavesdrop_capacity_array= np.zeros((attacker_num, user_num))
 
+        # 1.6 reward design
+        self.reward_design = reward_design # reward_design is ['ssr' or 'see']
+                     
         # 2.init channel
         self.H_UR = mmWave_channel(self.UAV, self.RIS, fre)
         self.h_U_k = []
