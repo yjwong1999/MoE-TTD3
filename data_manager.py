@@ -11,7 +11,7 @@ class DataManager(object):
     and must have a file 'init_location.xlsx' which contain the position of each entities
     """
     def __init__(self, store_list = ['beamforming_matrix', 'reflecting_coefficient', 'UAV_state', 'user_capacity'],\
-                 file_path = './data', store_path = './data/storage', project_name = None):
+                 file_path = './data', project_name = None, store_path = './data/storage'):
         # 1 init location data
         self.store_list = store_list
         self.init_data_file = file_path + '/init_location.xlsx'
