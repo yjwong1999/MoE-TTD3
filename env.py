@@ -101,7 +101,11 @@ class MiniSystem(object):
         self.user_list = []      
         for i in range(user_num):
             user_coordinate = self.data_manager.read_init_location('user', i)
-            user = User(coordinate=user_coordinate, index=i)
+            delta_d, direction_fai_coef = self.data_manager.read_movement('user', i)
+            user = User(coordinate=user_coordinate, \
+                        delta_d = delta_d, \
+                        direction_fai_coef = direction_fai_coef, \
+                        index=i)
             user.noise_power = -114
             self.user_list.append(user)
 
@@ -109,7 +113,11 @@ class MiniSystem(object):
         self.attacker_list = []
         for i in range(attacker_num):
             attacker_coordinate = self.data_manager.read_init_location('attacker', i)
-            attacker = Attacker(coordinate=attacker_coordinate, index=i)
+            delta_d, direction_fai_coef = self.data_manager.read_movement('attacker', i)
+            attacker = Attacker(coordinate=attacker_coordinate, \
+                                delta_d = delta_d, \
+                                direction_fai_coef = direction_fai_coef, \
+                                index=i)
             attacker.capacity = np.zeros((user_num))
             attacker.noise_power = -114
             self.attacker_list.append(attacker)
