@@ -114,21 +114,66 @@ class User(object):
         self.comprehensive_channel = 0
         # init receive noise sigma in dB
         self.noise_power = -114
+        
+        
+        #################
+        # new
+        # this is to prevent the user from going out of the boundary (will reflect the trajectory)
+        self.temp_x = None
+        self.temp_y = None
+        #################
 
     def reset(self, coordinate):
         """
         reset user coordinate
         """
         self.coordinate = coordinate
-        
+        #################
+        # new
+        self.temp_x = None
+        self.temp_y = None
+        #################
+    
     def update_coordinate(self, distance_delta_d, direction_fai):
         """
         used in function move to update UAV cordinate
+        """
+        
         """
         delta_x = distance_delta_d * math.cos(direction_fai)
         delta_y = distance_delta_d * math.sin(direction_fai)
         self.coordinate[0] += delta_x
         self.coordinate[1] += delta_y
+        """
+        
+        ########################
+        # new
+        delta_x = distance_delta_d * math.cos(direction_fai)
+        delta_y = distance_delta_d * math.sin(direction_fai)
+        
+        if self.temp_x is None:
+            self.temp_x = self.coordinate[0] + delta_x
+            self.temp_y = self.coordinate[1] + delta_y
+        else:
+            self.temp_x += delta_x
+            self.temp_y += delta_y
+        
+        # boundary check for x axis
+        if self.temp_x <= - 25:
+            self.coordinate[0] = -25 - (25 + self.temp_x)
+        elif self.temp_x >= 25:
+            self.coordinate[0] = 25 -  (self.temp_x - 25 )
+        else:
+            self.coordinate[0] = self.temp_x
+
+        # boundary check for y axis
+        if self.temp_y <= 0:
+            self.coordinate[1] = 0 - (0 + self.temp_y)
+        elif self.temp_y >= 50:
+            self.coordinate[1] = 50 -  (self.temp_y - 50 )
+        else:
+            self.coordinate[1] = self.temp_y
+        ########################
 
     def move(self, distance_delta_d, direction_fai):
         """
