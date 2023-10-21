@@ -56,13 +56,7 @@ class UAV(object):
         delta_y = distance_delta_d * math.sin(direction_fai)
         self.coordinate[0] += delta_x
         self.coordinate[1] += delta_y
-
-    def move(self, distance_delta_d, direction_fai, delta_angle = 0):
-        """
-        preform the 2D movement every step
-        """
-        self.update_coordinate(distance_delta_d, direction_fai)
-        self.update_coor_sys(delta_angle)
+        
 
 class RIS(object):
     """
