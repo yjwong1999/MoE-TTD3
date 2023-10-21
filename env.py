@@ -257,12 +257,14 @@ class MiniSystem(object):
         # 7.1 reward with energy efficiency
         ######################################################
         # new for energy 
-        #energy = energy_raw = get_energy_consumption(v_t)
-        #energy -= ENERGY_MIN
-        #energy /= (ENERGY_MAX - ENERGY_MIN)
-        #energy_penalty = -1 * 0.1 * abs(reward) * energy # -1 * 0.1 * reward * energy
-        #if reward > 0:
-            # reward += energy_penalty
+        if self.reward_design == 'see':
+            # new for see
+            energy = energy_raw = get_energy_consumption(v_t)
+            energy -= ENERGY_MIN
+            energy /= (ENERGY_MAX - ENERGY_MIN)
+            energy_penalty = -1 * 0.1 * abs(reward) * energy # -1 * 0.1 * reward * energy
+            if reward > 0:
+                reward += energy_penalty
         ######################################################
         
         # 8 calculate if UAV is cross the bourder
