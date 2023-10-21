@@ -57,11 +57,20 @@ class DataManager(object):
             self.simulation_result_dic.update({store_item:[]})
 
     def read_init_location(self, entity_type = 'user', index = 0):
+        temp = []
         if entity_type == 'user' or 'attacker' or 'RIS' or 'RIS_norm_vec' or 'UAV':
-            return np.array([\
-            pd.read_excel(self.init_data_file, sheet_name=entity_type)['x'][index],\
-            pd.read_excel(self.init_data_file, sheet_name=entity_type)['y'][index],\
-            pd.read_excel(self.init_data_file, sheet_name=entity_type)['z'][index]])
+            # xyz
+            temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['x'][index])
+            temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['y'][index])
+            temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['z'][index])
+            # direction and angle
+            try:
+                temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['delta_d'][index])
+                temp.append(pd.read_excel(self.init_data_file, sheet_name=entity_type)['direction_fai_coef'][index])
+            except:
+                pass # because not all entity moves
+                
+            return np.array(temp)
         else:
             return None
     
