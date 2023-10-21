@@ -105,6 +105,7 @@ class MiniSystem(object):
             user = User(coordinate=user_coordinate, \
                         delta_d = delta_d, \
                         direction_fai_coef = direction_fai_coef, \
+                        border = self.border, \
                         index=i)
             user.noise_power = -114
             self.user_list.append(user)
@@ -117,6 +118,7 @@ class MiniSystem(object):
             attacker = Attacker(coordinate=attacker_coordinate, \
                                 delta_d = delta_d, \
                                 direction_fai_coef = direction_fai_coef, \
+                                border = self.border, \
                                 index=i)
             attacker.capacity = np.zeros((user_num))
             attacker.noise_power = -114
