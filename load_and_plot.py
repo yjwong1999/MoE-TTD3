@@ -22,7 +22,7 @@ args = parser.parse_args()
 PROJECT_NAME = args.project_name
 
 # process
-STORE_PATH = 'data/storage/test/{PROJECT_NAME}
+STORE_PATH = 'data/storage/test/{PROJECT_NAME}'
 assert os.path.isdir(STORE_PATH), 'Please run run_simulation.py before checking the results'
 
 
