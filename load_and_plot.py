@@ -323,8 +323,8 @@ class LoadAndPlot(object):
 
 
 
-        update_results(json_filename, \
-                       project_name, \
+        update_results(json_filename='result.json', \
+                       project_name = os.path.basename(self.store_path[:-2]), \
                        reward = self.all_steps['reward'][-1], \
                        ave_ssr = average_sum_secrecy_rate[-1])
 
