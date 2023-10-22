@@ -1,4 +1,6 @@
 # Deep Reinforcement Learning for Secrecy Energy-Efficient UAV Communication with Reconfigurable Intelligent Surfaces
+[Please refer this link for stable implementation](https://github.com/yjwong1999/Twin-TD3)
+
 
 todo
 - [ ] yaml file for user num, attacker num, and so on
