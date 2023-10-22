@@ -15,14 +15,15 @@ import argparse
 # get argument from user
 parser = argparse.ArgumentParser()
 parser.add_argument('--project-name', type = str, required = False, default=None, help="project name")
-
+parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
 
 # extract argument
 args = parser.parse_args()
 PROJECT_NAME = args.project_name
+EP_NUM = args.ep_num
 
 # process
-STORE_PATH = 'data/storage/test/{PROJECT_NAME}'
+STORE_PATH = f'data/storage/test/{PROJECT_NAME}'
 assert os.path.isdir(STORE_PATH), 'Please run run_simulation.py before checking the results'
 
 
@@ -361,11 +362,14 @@ class LoadAndPlot(object):
         init_user_coord_1 = read_init_location(entity_type = 'user', index=1)
         
         ep_num = EP_NUM
-        interval = int(0.2 * EP_NUM)
-        ep_list = [0] + [i for i in range(20-1, ep_num, interval)]
-        if EP_NUM - 1 not in ep_list: ep_list.append(EP_NUM - 1)
-        color_list_template = ['b', 'g', 'c', 'k', 'm', 'r', 'y', 'black', 'red']
+        if ep_num > 10:
+            interval = int(0.2 * EP_NUM)
+            ep_list = [0] + [i for i in range(20-1, ep_num, interval)]
+            if EP_NUM - 1 not in ep_list: ep_list.append(EP_NUM - 1)
+        else:
+            ep_list = range(ep_num)
         
+        color_list_template = ['b', 'g', 'c', 'k', 'm', 'r', 'y', 'black', 'red']
         
         color_list = copy.deepcopy(color_list_template)
         for i in ep_list:
