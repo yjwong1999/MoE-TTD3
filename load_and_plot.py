@@ -16,14 +16,19 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--project-name', type = str, required = False, default=None, help="project name")
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
+parser.add_argument('--test', default=False, action='store_true', help='raise this argument if this is test (deploy)')
 
 # extract argument
 args = parser.parse_args()
 PROJECT_NAME = args.project_name
 EP_NUM = args.ep_num
+TEST = args.test
 
 # process
-STORE_PATH = f'data/storage/test/{PROJECT_NAME}'
+if TEST:
+    STORE_PATH = f'data/storage/test/{PROJECT_NAME}'
+else:
+    STORE_PATH = f'data/storage/train/{PROJECT_NAME}'
 assert os.path.isdir(STORE_PATH), 'Please run run_simulation.py before checking the results'
 
 
@@ -182,6 +187,26 @@ class LoadAndPlot(object):
         plt.ylabel("Reward")
         plt.savefig(self.store_path + 'plot/reward.png')
         plt.cla()
+
+
+        ###############################
+        # plot total reward of each episode
+        ###############################
+        fig = plt.figure('total_reward')
+        reward = np.array(self.all_steps['reward'])
+        all_reward = []
+        j = 0
+        for i in range(self.ep_num):
+            reward_one_episode = reward[j:j+step_num_per_episode[i]] # ssr means Sum Secrecy Rate
+            #print(j, j+step_num_per_episode[i])
+            j = j+step_num_per_episode[i]
+            reward_one_episode = sum(reward_one_episode)
+            all_reward.append(reward_one_episode)
+        plt.plot(range(len(all_reward)), all_reward)
+        plt.xlabel("Episodes (Ep)")
+        plt.ylabel("Total Reward")
+        plt.savefig(self.store_path + 'plot/total_reward.png')
+        plt.cla()
         
         
         ###############################
@@ -226,6 +251,7 @@ class LoadAndPlot(object):
         print('###########################################################')
         print('Metrics\t\t\tLast Episode\tMax Values Reached')
         print('###########################################################')
+        print('Reward\t\t\t{:.2f}\t\t{:.2f}'.format(all_reward[-1], max(all_reward)))
         print('SSR (bits/s/Hz)\t\t{:.2f}\t\t{:.2f}'.format(average_sum_secrecy_rate[-1], max(average_sum_secrecy_rate)))
         
 
@@ -362,7 +388,7 @@ class LoadAndPlot(object):
         init_user_coord_1 = read_init_location(entity_type = 'user', index=1)
         
         ep_num = EP_NUM
-        if ep_num > 10:
+        if ep_num > 9:
             interval = int(0.2 * EP_NUM)
             ep_list = [0] + [i for i in range(20-1, ep_num, interval)]
             if EP_NUM - 1 not in ep_list: ep_list.append(EP_NUM - 1)
