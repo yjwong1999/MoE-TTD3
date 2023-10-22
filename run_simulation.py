@@ -263,5 +263,3 @@ try:
 
 except KeyboardInterrupt:
     raise KeyboardInterrupt
-finally:
-    shutil.rmtree('data/storage/test')
