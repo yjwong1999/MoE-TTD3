@@ -1,20 +1,19 @@
 import json
 
-with open("data_file.json", "r") as read_file:
-    data = json.load(read_file)
+def update_results(json_filename, project_name, reward, ave_ssr=0):
+    if not os.path.isfile(json_filename):
+        # create data
+        data = {}
+    else:
+        # read json file
+        with open(json_filename, "r") as read_file:
+            data = json.load(read_file)
 
-print(data)
+    # add new data
+    data[project_name] = {'reward': reward,\
+                          'ave_ssr': ave_ssr
+                         }
 
-
-import json
-
-data = {
-    "name": "John",
-    "age": 30,
-    "city": "New York"
-}
-
-json_string = json.dumps(data)
-
-with open("data_file.json", "w") as write_file:
-    write_file.write(json_string)
+    # write data
+    with open(json_filename, "w") as write_file:
+        write_file.write(data)
