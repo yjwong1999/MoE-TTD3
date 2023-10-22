@@ -63,7 +63,8 @@ class MiniSystem(object):
     def __init__(self, UAV_num = 1, RIS_num = 1, user_num = 1, attacker_num = 1, fre = 28e9, \
                  RIS_ant_num = 16, UAV_ant_num=8, if_dir_link = 1, if_with_RIS = True, \
                  if_move_users = True, if_move_attackers = True, if_movements = True, \
-                 if_UAV_pos_state = True, reward_design = 'ssr', project_name = None):
+                 if_UAV_pos_state = True, reward_design = 'ssr', project_name = None,
+                 train=True):
         self.if_dir_link = if_dir_link
         self.if_with_RIS = if_with_RIS
         self.if_move_users = if_move_users
@@ -75,7 +76,10 @@ class MiniSystem(object):
         self.border = [(-25,25), (0, 50)]
                      
         # 1.init entities: 1 UAV, 1 RIS, many users and attackers
-        self.data_manager = DataManager(file_path='./data', project_name = project_name, \
+        store_path = './data/storage/train' if train else './data/storage/test'
+        self.data_manager = DataManager(file_path='./data', \
+                                        project_name = project_name, \
+                                        store_path = store_path, \
                                         store_list = ['beamforming_matrix', 'reflecting_coefficient', \
                                                       'UAV_state', 'user_capacity', 'secure_capacity', \
                                                       'attaker_capacity','G_power', 'reward','UAV_movement']
