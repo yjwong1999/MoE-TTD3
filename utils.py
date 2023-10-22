@@ -1,4 +1,4 @@
-import json
+import os, json
 
 def update_results(json_filename, project_name, reward, ave_ssr=0):
     if not os.path.isfile(json_filename):
@@ -15,5 +15,5 @@ def update_results(json_filename, project_name, reward, ave_ssr=0):
                          }
 
     # write data
-    with open(json_filename, "w") as write_file:
-        write_file.write(data)
+    with open(json_filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
