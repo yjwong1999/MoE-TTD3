@@ -8,18 +8,22 @@ import copy
 import math
 import csv
 
+from utils import update_results
+
 import argparse
 
 # get argument from user
 parser = argparse.ArgumentParser()
-parser.add_argument('--path', type = str, required = False, default=None, help='the path where the training/simulation data is stored')
-parser.add_argument('--ep-num', type = int, required = False, default=300, help='total number of episodes')
+parser.add_argument('--project-name', type = str, required = False, default=None, help="project name")
 
 
 # extract argument
 args = parser.parse_args()
-STORE_PATH = args.path
-EP_NUM = args.ep_num
+PROJECT_NAME = args.project_name
+
+# process
+STORE_PATH = 'data/storage/test/{PROJECT_NAME}
+assert os.path.isdir(STORE_PATH), 'Please run run_simulation.py before checking the results'
 
 
 ######################################################
@@ -316,6 +320,13 @@ class LoadAndPlot(object):
         # plot trajectory
         ###############################
         self.plot_trajectory()
+
+
+
+        update_results(json_filename, \
+                       project_name, \
+                       reward = self.all_steps['reward'][-1], \
+                       ave_ssr = average_sum_secrecy_rate[-1])
 
     
     def plot_one_RIS_element(self, index):
