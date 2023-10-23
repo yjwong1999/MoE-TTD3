@@ -10,6 +10,7 @@ parser.add_argument('--drl', type = str, required = True, default='td3', help="w
 parser.add_argument('--reward', type = str, required = True, default='see', help="which reward would you like to implement ['ssr', 'see']")
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
 parser.add_argument('--task-num', type = int, required = True, default=None, help="how many tasks")
+parser.add_argument('--cluster-num', type = int, required = True, default=None, help="how many clusters")
 
 # get the arguments
 args = parser.parse_args()
@@ -17,6 +18,7 @@ DRL_ALGO = args.drl
 REWARD_DESIGN = args.reward
 EPISODE_NUM = args.ep_num
 TASK_NUM = args.task_num
+CLUSTER_NUM = args.cluster_num
 
 # validate the argument
 assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
@@ -244,6 +246,6 @@ plt.show()
 # Clustering
 linkage = ["ward", "average", "complete", "single"]
 np.random.seed(0)
-clustering = AgglomerativeClustering(linkage=linkage[2], n_clusters=10)
+clustering = AgglomerativeClustering(linkage=linkage[2], n_clusters=CLUSTER_NUM)
 clustering.fit(X)
 print(clustering.labels_)
