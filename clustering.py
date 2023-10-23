@@ -231,12 +231,11 @@ for i in range(len(sim_matrix)):
 
     X.append(feature)
 
-# Create a KMeans object with 3 clusters
-clustering = AgglomerativeClustering(distance_threshold=0, n_clusters=None).fit(X)
-clustering.labels_
+# Clustering
+model = AgglomerativeClustering(distance_threshold=0, n_clusters=None).fit(X)
 
 plt.title("Hierarchical Clustering Dendrogram")
 # plot the top three levels of the dendrogram
-plot_dendrogram(clustering, truncate_mode="level", p=3)
+plot_dendrogram(model, truncate_mode="level", p=3)
 plt.xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.show()
