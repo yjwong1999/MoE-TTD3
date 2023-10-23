@@ -195,6 +195,20 @@ results
 ###########################################
 # clustering
 ###########################################
+X = []
+for i in range(len(sim_matrix)):
+    sim_with_other_model = sim_matrix[i]
+    result_of_this_model = results[str(i+1)]
+    # print(list(sim_with_other_model))
+
+    feature = [result_of_this_model['reward'],
+              result_of_this_model['ave_ssr']]
+    feature += list(sim_with_other_model)
+    #print(feature)
+
+    X.append(feature)
+'''
+# Clustering
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
 
@@ -216,22 +230,8 @@ def plot_dendrogram(model, **kwargs):
 
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
-
-
-X = []
-for i in range(len(sim_matrix)):
-    sim_with_other_model = sim_matrix[i]
-    result_of_this_model = results[str(i+1)]
-    # print(list(sim_with_other_model))
-
-    feature = [result_of_this_model['reward'],
-              result_of_this_model['ave_ssr']]
-    feature += list(sim_with_other_model)
-    #print(feature)
-
-    X.append(feature)
-
-# Clustering
+    
+np.random.seed(0)
 model = AgglomerativeClustering(distance_threshold=0, n_clusters=None).fit(X)
 
 plt.title("Hierarchical Clustering Dendrogram")
@@ -239,3 +239,11 @@ plt.title("Hierarchical Clustering Dendrogram")
 plot_dendrogram(model, truncate_mode="level", p=3)
 plt.xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.show()
+'''
+
+# Clustering
+linkage = ["ward", "average", "complete", "single"]
+np.random.seed(0)
+clustering = AgglomerativeClustering(linkage=linkage[2], n_clusters=10)
+clustering.fit(X)
+print(clustering.labels_)
