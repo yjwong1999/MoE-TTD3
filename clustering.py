@@ -218,11 +218,15 @@ for i in range(TASK_NUM):
         print(init_params.shape, all_params[i].shape)
         sim = cos(all_params[i] - init_params, all_params[j] - init_params)
         angle = torch.acos(sim)
+        if sim.cpu().detach().numpy() >= 1:
+            angle = 0
+        elif sim.cpu().detach().numpy() <= -1:
+            angle = 3.14159
         #print(i+1, j+1, sim)
-        sim_matrix[i][j] = angle
+        sim_matrix[i][j] = angle * 180 / 3.14159 # convert to angle
 print('\n\nCosine Angle')
 print(sim_matrix)
-
+x1 = sim_matrix
 
 
 ###########################################
@@ -236,6 +240,12 @@ for i in range(TASK_NUM):
         sim_matrix[i][j] = rho
 print('\n\nSpearman Correlation')
 print(sim_matrix)
+x2 = sim_matrix
+
+rho, p  = spearmanr(x1.reshape(-1), x2.reshape(-1))
+print('\n\nCorrelation')
+print(rho, p)
+
 
 
 ###########################################
