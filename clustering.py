@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--drl', type = str, required = True, default='td3', help="which drl algo would you like to choose ['ddpg', 'td3']")
 parser.add_argument('--reward', type = str, required = True, default='see', help="which reward would you like to implement ['ssr', 'see']")
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
+parser.add_argument('--seeds', type = int, required = False, default=None,  nargs='+', help="what seed(s) would you like to use for DRL 1 and 2, please provide in one or two int")
 parser.add_argument('--task-num', type = int, required = True, default=None, help="how many tasks")
 parser.add_argument('--cluster-num', type = int, required = True, default=None, help="how many clusters")
 
@@ -17,12 +18,15 @@ args = parser.parse_args()
 DRL_ALGO = args.drl
 REWARD_DESIGN = args.reward
 EPISODE_NUM = args.ep_num
+SEEDS = args.seeds
 TASK_NUM = args.task_num
 CLUSTER_NUM = args.cluster_num
 
 # validate the argument
 assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
 assert REWARD_DESIGN in ['ssr', 'see'], "reward must be ['ssr', 'see']"
+if SEEDS is not None:
+    assert len(SEEDS) in [1, 2] and isinstance(SEEDS[0], int) and isinstance(SEEDS[-1], int), "seeds must be a list of 1 or 2 integer"
 
 # get DRL_ALGO
 if DRL_ALGO == 'td3':
@@ -42,7 +46,7 @@ from scipy.cluster.hierarchy import dendrogram
 
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
-
+from scipy.stats import spearmanr
 
 ###########################################
 # Get weights of all models
@@ -75,6 +79,9 @@ for i in range(TASK_NUM):
 
 
     # 2 init RL Agent
+    if SEEDS is not None:
+        torch.manual_seed(SEEDS[0]) # 1
+        torch.cuda.manual_seed_all(SEEDS[0]) # 1
     agent_1_param_dic = {}
     agent_1_param_dic["alpha"] = 0.0001
     agent_1_param_dic["beta"] = 0.001
@@ -89,7 +96,10 @@ for i in range(TASK_NUM):
     agent_1_param_dic["layer2_size"] = 600
     agent_1_param_dic["layer3_size"] = 512
     agent_1_param_dic["layer4_size"] = 256
-
+    
+    if SEEDS is not None:
+        torch.manual_seed(SEEDS[-1]) # 2
+        torch.cuda.manual_seed_all(SEEDS[-1]) # 2
     agent_2_param_dic = {}
     agent_2_param_dic["alpha"] = 0.0001
     agent_2_param_dic["beta"] = 0.001
@@ -137,7 +147,19 @@ for i in range(TASK_NUM):
         agent_name= agent_2_param_dic["agent_name"]
         )
 
+    # 2.1 load pretrained models (or seed model)
+    
+    # 2.2 get init model parameters
+    init_params = []
+    for key in agent_1.actor._modules.keys():
+        init_params += [p.view(-1) for p in agent_1.actor._modules[key].parameters()]
+    for key in agent_2.actor._modules.keys():
+        init_params += [p.view(-1) for p in agent_2.actor._modules[key].parameters()]
 
+    init_params = torch.cat(init_params)
+
+
+    # 3 load task-specific weight
     if DRL_ALGO == 'td3':
         agent_1.load_models(
             load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_G_and_Phi_TD3',
@@ -159,7 +181,7 @@ for i in range(TASK_NUM):
             load_file_critic = system.data_manager.store_path.replace('test', 'train') + '/Critic_UAV_ddpg'
             )
 
-    # get model parameters
+    # 3.1 get model parameters
     params = []
     for key in agent_1.actor._modules.keys():
         params += [p.view(-1) for p in agent_1.actor._modules[key].parameters()]
@@ -169,6 +191,7 @@ for i in range(TASK_NUM):
     params = torch.cat(params)
 
     all_params.append(params)
+
 
 
 ###########################################
@@ -181,6 +204,37 @@ for i in range(TASK_NUM):
         sim = cos(all_params[i], all_params[j])
         #print(i+1, j+1, sim)
         sim_matrix[i][j] = sim
+print('\n\nCosine Similarity')
+print(sim_matrix)
+
+
+###########################################
+# cosine angle matrix
+###########################################
+cos = torch.nn.CosineSimilarity(dim=0)
+sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
+for i in range(TASK_NUM):
+    for j in range(TASK_NUM):
+        print(init_params.shape, all_params[i].shape)
+        sim = cos(all_params[i] - init_params, all_params[j] - init_params)
+        angle = torch.acos(sim)
+        #print(i+1, j+1, sim)
+        sim_matrix[i][j] = angle
+print('\n\nCosine Angle')
+print(sim_matrix)
+
+
+
+###########################################
+# spearman correlation matrix
+###########################################
+sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
+for i in range(TASK_NUM):
+    for j in range(TASK_NUM):
+        rho, p  = spearmanr(all_params[i].cpu().detach().numpy(), all_params[j].cpu().detach().numpy())
+        #print(i+1, j+1, sim)
+        sim_matrix[i][j] = rho
+print('\n\nSpearman Correlation')
 print(sim_matrix)
 
 
@@ -191,7 +245,7 @@ print(sim_matrix)
 import json
 with open('result.json', "r") as read_file:
     results = json.load(read_file)
-results
+print(results)
 
 
 ###########################################
@@ -209,6 +263,8 @@ for i in range(len(sim_matrix)):
     #print(feature)
 
     X.append(feature)
+X = np.array(X)
+print(X)
 '''
 # Clustering
 def plot_dendrogram(model, **kwargs):
