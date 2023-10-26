@@ -46,7 +46,7 @@ from scipy.cluster.hierarchy import dendrogram
 
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, pearsonr, rankdata
 
 ###########################################
 # Get weights of all models
@@ -206,6 +206,7 @@ for i in range(TASK_NUM):
         sim_matrix[i][j] = sim
 print('\n\nCosine Similarity')
 print(sim_matrix)
+x1 = sim_matrix
 
 
 ###########################################
@@ -215,7 +216,7 @@ cos = torch.nn.CosineSimilarity(dim=0)
 sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
 for i in range(TASK_NUM):
     for j in range(TASK_NUM):
-        print(init_params.shape, all_params[i].shape)
+        #print(init_params.shape, all_params[i].shape)
         sim = cos(all_params[i] - init_params, all_params[j] - init_params)
         angle = torch.acos(sim)
         if sim.cpu().detach().numpy() >= 1:
@@ -226,7 +227,7 @@ for i in range(TASK_NUM):
         sim_matrix[i][j] = angle * 180 / 3.14159 # convert to angle
 print('\n\nCosine Angle')
 print(sim_matrix)
-x1 = sim_matrix
+x2 = sim_matrix
 
 
 ###########################################
@@ -235,16 +236,14 @@ x1 = sim_matrix
 sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
 for i in range(TASK_NUM):
     for j in range(TASK_NUM):
-        rho, p  = spearmanr(all_params[i].cpu().detach().numpy(), all_params[j].cpu().detach().numpy())
+        x = rankdata(all_params[i].cpu().detach().numpy())
+        y = rankdata(all_params[j].cpu().detach().numpy())
+        rho, p  = spearmanr(x, y)
         #print(i+1, j+1, sim)
         sim_matrix[i][j] = rho
 print('\n\nSpearman Correlation')
 print(sim_matrix)
-x2 = sim_matrix
-
-rho, p  = spearmanr(x1.reshape(-1), x2.reshape(-1))
-print('\n\nCorrelation')
-print(rho, p)
+x3 = sim_matrix
 
 
 
@@ -256,6 +255,41 @@ import json
 with open('result.json', "r") as read_file:
     results = json.load(read_file)
 print(results)
+
+
+reward_mat = []
+for i in range(TASK_NUM):
+    reward_mat.append(results[str(i+1)]['reward'])
+reward_mat = np.array(reward_mat)
+reward_mat = (reward_mat-np.min(reward_mat))/(np.max(reward_mat)-np.min(reward_mat))
+
+ssr_mat = []
+for i in range(TASK_NUM):
+    ssr_mat.append(results[str(i+1)]['ave_ssr'])
+ssr_mat = np.array(ssr_mat)       
+ssr_mat = (ssr_mat-np.min(ssr_mat))/(np.max(ssr_mat)-np.min(ssr_mat))
+
+###########################################
+# Relationship between variables
+###########################################
+rho, p  = pearsonr(x1.reshape(-1), x3.reshape(-1))
+print('\n\nPearson Corr. (Cosine Sim & Spearman Corr of weights)')
+print(rho, p)
+x1 = (x1-np.min(x1))/(np.max(x1)-np.min(x1))
+x2 = (x2-np.min(x2))/(np.max(x2)-np.min(x2))
+rho, p  = spearmanr(np.sum(x1, axis=0).reshape(-1), reward_mat)
+print('\n\nSpearman Corr. (Cosine Sim of weights & Reward)')
+print(rho, p)
+rho, p  = spearmanr(np.sum(x1, axis=0).reshape(-1), ssr_mat)
+print('\n\nSpearman Corr. (Cosine Sim of weights & SSR)')
+print(rho, p)
+rho, p  = spearmanr(np.sum(x3, axis=0).reshape(-1), reward_mat)
+print('\n\nSpearman Corr. (SROCC of weights & Reward)')
+print(rho, p)
+rho, p  = spearmanr(np.sum(x3, axis=0).reshape(-1), ssr_mat)
+print('\n\nSpearman Corr. (SROCC of weights & SSR)')
+print(rho, p)
+
 
 
 ###########################################
