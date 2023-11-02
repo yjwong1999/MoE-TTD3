@@ -233,18 +233,48 @@ x2 = sim_matrix
 ###########################################
 # spearman correlation matrix
 ###########################################
+# sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
+# for i in range(TASK_NUM):
+#     for j in range(TASK_NUM):
+#         x = rankdata(all_params[i].cpu().detach().numpy())
+#         y = rankdata(all_params[j].cpu().detach().numpy())
+#         rho, p  = spearmanr(x, y)
+#         #print(i+1, j+1, sim)
+#         sim_matrix[i][j] = rho
+# print('\n\nSpearman Correlation')
+# print(sim_matrix)
+# x3 = sim_matrix
+
+
+def _get_ranks(x: torch.Tensor) -> torch.Tensor:
+    tmp = x.argsort()
+    ranks = torch.zeros_like(tmp).cuda()
+    ranks[tmp] = torch.arange(len(x)).cuda()
+    return ranks
+
+def spearman_correlation(x: torch.Tensor, y: torch.Tensor):
+    """Compute correlation between 2 1-D vectors
+    Args:
+        x: Shape (N, )
+        y: Shape (N, )
+    """
+    x_rank = _get_ranks(x)
+    y_rank = _get_ranks(y)
+    
+    n = x.size(0)
+    upper = 6 * torch.sum((x_rank - y_rank).pow(2))
+    down = n * (n ** 2 - 1.0)
+    return 1.0 - (upper / down)
+
 sim_matrix = np.zeros((TASK_NUM, TASK_NUM))
 for i in range(TASK_NUM):
     for j in range(TASK_NUM):
-        x = rankdata(all_params[i].cpu().detach().numpy())
-        y = rankdata(all_params[j].cpu().detach().numpy())
-        rho, p  = spearmanr(x, y)
+        rho = spearman_correlation(all_params[i], all_params[j])
         #print(i+1, j+1, sim)
         sim_matrix[i][j] = rho
 print('\n\nSpearman Correlation')
 print(sim_matrix)
 x3 = sim_matrix
-
 
 
 ###########################################
