@@ -4,7 +4,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 import argparse
 
-'''
+
 # get argument from user
 parser = argparse.ArgumentParser()
 parser.add_argument('--drl', type = str, required = True, default='td3', help="which drl algo would you like to choose ['ddpg', 'td3']")
@@ -22,15 +22,6 @@ EPISODE_NUM = args.ep_num
 SEEDS = args.seeds
 TASK_NUM = args.task_num
 SPLIT_IDX = args.split_idx
-'''
-
-DRL_ALGO = 'td3'
-REWARD_DESIGN = 'ssr'
-EPISODE_NUM = 300
-SEEDS = [123]
-TASK_NUM = 50
-CLUSTER_NUM = 2
-SPLIT_IDX = '1'
 
 # validate the argument
 assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
