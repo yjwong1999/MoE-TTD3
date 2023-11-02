@@ -12,6 +12,7 @@ parser.add_argument('--reward', type = str, required = True, default='see', help
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
 parser.add_argument('--seeds', type = int, required = False, default=None,  nargs='+', help="what seed(s) would you like to use for DRL 1 and 2, please provide in one or two int")
 parser.add_argument('--task-num', type = int, required = True, default=None, help="how many tasks")
+parser.add_argument('--task-idx', type = int, required = False, default=None,  nargs='+', help="task index")
 parser.add_argument('--split-idx', type = str, required = True, default='1', help="which split now")
 
 # get the arguments
@@ -21,6 +22,7 @@ REWARD_DESIGN = args.reward
 EPISODE_NUM = args.ep_num
 SEEDS = args.seeds
 TASK_NUM = args.task_num
+TASK_IDX = args.task_idx
 SPLIT_IDX = args.split_idx
 
 # validate the argument
@@ -28,6 +30,10 @@ assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
 assert REWARD_DESIGN in ['ssr', 'see'], "reward must be ['ssr', 'see']"
 if SEEDS is not None:
     assert len(SEEDS) in [1, 2] and isinstance(SEEDS[0], int) and isinstance(SEEDS[-1], int), "seeds must be a list of 1 or 2 integer"
+if TASK_IDX is not None:
+    TASK_NUM = len(TASK_IDX)
+else:
+    TASK_IDX = [i + 1 for i in range(TASK_NUM)]
 
 # get DRL_ALGO
 if DRL_ALGO == 'td3':
@@ -56,7 +62,8 @@ all_agent_1_params = []
 all_agent_2_params = []
 
 for i in range(TASK_NUM):
-    project_name = str(i + 1)
+    i = TASK_IDX[i]
+    project_name = str(i)
 
     # 1 init system model
     step_num = 20
@@ -197,7 +204,7 @@ for i in range(TASK_NUM):
     # 4.2 append
     all_agent_1_params.append(agent_1_params)
     all_agent_2_params.append(agent_2_params)
-
+hardcode_index = i
 
 # 5 perform FL
 print("\nFEDERATED LEARNING\n")
@@ -250,10 +257,10 @@ for i in range(len(agent_2_params)):
 
 # 5.4 change checkpoint name
 for i in range(len(agent_1_params)):
-    agent_1_nets[i].checkpoint_file = agent_1_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{TASK_NUM}', f'{SPLIT_IDX}')
+    agent_1_nets[i].checkpoint_file = agent_1_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{hardcode_index}', f'{SPLIT_IDX}')
     print(agent_1_nets[i].checkpoint_file)
 for i in range(len(agent_2_params)):
-    agent_2_nets[i].checkpoint_file = agent_2_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{TASK_NUM}', f'{SPLIT_IDX}')
+    agent_2_nets[i].checkpoint_file = agent_2_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{hardcode_index}', f'{SPLIT_IDX}')
     print(agent_2_nets[i].checkpoint_file)
 
 
