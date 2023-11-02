@@ -282,7 +282,7 @@ x3 = sim_matrix
 ###########################################
 # read json file
 import json
-with open('result.json', "r") as read_file:
+with open('data/result.json', "r") as read_file:
     results = json.load(read_file)
 print(results)
 
