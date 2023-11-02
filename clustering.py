@@ -11,6 +11,7 @@ parser.add_argument('--reward', type = str, required = True, default='see', help
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
 parser.add_argument('--seeds', type = int, required = False, default=None,  nargs='+', help="what seed(s) would you like to use for DRL 1 and 2, please provide in one or two int")
 parser.add_argument('--task-num', type = int, required = True, default=None, help="how many tasks")
+parser.add_argument('--task-idx', type = int, required = False, default=None,  nargs='+', help="task index")
 parser.add_argument('--cluster-num', type = int, required = True, default=None, help="how many clusters")
 
 # get the arguments
@@ -20,6 +21,7 @@ REWARD_DESIGN = args.reward
 EPISODE_NUM = args.ep_num
 SEEDS = args.seeds
 TASK_NUM = args.task_num
+TASK_IDX = args.task_idx
 CLUSTER_NUM = args.cluster_num
 
 # validate the argument
@@ -27,6 +29,10 @@ assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
 assert REWARD_DESIGN in ['ssr', 'see'], "reward must be ['ssr', 'see']"
 if SEEDS is not None:
     assert len(SEEDS) in [1, 2] and isinstance(SEEDS[0], int) and isinstance(SEEDS[-1], int), "seeds must be a list of 1 or 2 integer"
+if TASK_IDX is not None:
+    TASK_NUM = len(TASK_IDX)
+else:
+    TASK_IDX = [i + 1 for i in range(TASK_NUM)]
 
 # get DRL_ALGO
 if DRL_ALGO == 'td3':
@@ -53,7 +59,8 @@ from scipy.stats import spearmanr, pearsonr, rankdata
 ###########################################
 all_params = [] # parameters of all task-based DRL
 for i in range(TASK_NUM):
-    project_name = str(i + 1)
+    i = TASK_IDX[i]
+    project_name = str(i)
 
     # 1 init system model
     step_num = 20
