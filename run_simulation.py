@@ -10,6 +10,7 @@ parser.add_argument('--drl', type = str, required = True, default='td3', help="w
 parser.add_argument('--reward', type = str, required = True, default='see', help="which reward would you like to implement ['ssr', 'see']")
 parser.add_argument('--ep-num', type = int, required = False, default=300, help="how many episodes do you want to train your DRL")
 parser.add_argument('--project-name', type = str, required = True, default=None, help="project name")
+parser.add_argument('--split-idx', type = str, required = False, default=None, help="FL model of given split index")
 
 # get the arguments
 args = parser.parse_args()
@@ -17,6 +18,7 @@ DRL_ALGO = args.drl
 REWARD_DESIGN = args.reward
 EPISODE_NUM = args.ep_num
 PROJECT_NAME = args.project_name
+SPLIT_IDX = args.split_idx
 
 # validate the argument
 assert DRL_ALGO in ['ddpg', 'td3'], "drl must be ['ddpg', 'td3']"
@@ -123,26 +125,48 @@ agent_2 = Agent(
     ) 
 
 
-if DRL_ALGO == 'td3':
-    agent_1.load_models(
-         load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_G_and_Phi_TD3',
-         load_file_critic_1 = system.data_manager.store_path.replace('test', 'train') + '/Critic_1_G_and_Phi_TD3',
-         load_file_critic_2 = system.data_manager.store_path.replace('test', 'train') + '/Critic_2_G_and_Phi_TD3'
-         )
-    agent_2.load_models(
-         load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_UAV_TD3',
-         load_file_critic_1 = system.data_manager.store_path.replace('test', 'train') + '/Critic_1_UAV_TD3',
-         load_file_critic_2 = system.data_manager.store_path.replace('test', 'train') + '/Critic_2_UAV_TD3'
-         )
-elif DRL_ALGO == 'ddpg':
-    agent_1.load_models(
-         load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_G_and_Phi_ddpg',
-         load_file_critic = system.data_manager.store_path.replace('test', 'train') + '/Critic_G_and_Phi_ddpg'
-         )
-    agent_2.load_models(
-         load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_UAV_ddpg',
-         load_file_critic = system.data_manager.store_path.replace('test', 'train') + '/Critic_UAV_ddpg'
-         )
+if SPLIT_IDX is None:
+    if DRL_ALGO == 'td3':
+        agent_1.load_models(
+            load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_G_and_Phi_TD3',
+            load_file_critic_1 = system.data_manager.store_path.replace('test', 'train') + '/Critic_1_G_and_Phi_TD3',
+            load_file_critic_2 = system.data_manager.store_path.replace('test', 'train') + '/Critic_2_G_and_Phi_TD3'
+            )
+        agent_2.load_models(
+            load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_UAV_TD3',
+            load_file_critic_1 = system.data_manager.store_path.replace('test', 'train') + '/Critic_1_UAV_TD3',
+            load_file_critic_2 = system.data_manager.store_path.replace('test', 'train') + '/Critic_2_UAV_TD3'
+            )
+    elif DRL_ALGO == 'ddpg':
+        agent_1.load_models(
+            load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_G_and_Phi_ddpg',
+            load_file_critic = system.data_manager.store_path.replace('test', 'train') + '/Critic_G_and_Phi_ddpg'
+            )
+        agent_2.load_models(
+            load_file_actor = system.data_manager.store_path.replace('test', 'train') + '/Actor_UAV_ddpg',
+            load_file_critic = system.data_manager.store_path.replace('test', 'train') + '/Critic_UAV_ddpg'
+            )
+else:
+    if DRL_ALGO == 'td3':
+        agent_1.load_models(
+            load_file_actor = f'data/storage/seed/{SPLIT_IDX}' + '/Actor_G_and_Phi_TD3',
+            load_file_critic_1 = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_1_G_and_Phi_TD3',
+            load_file_critic_2 = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_2_G_and_Phi_TD3'
+            )
+        agent_2.load_models(
+            load_file_actor = f'data/storage/seed/{SPLIT_IDX}' + '/Actor_UAV_TD3',
+            load_file_critic_1 = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_1_UAV_TD3',
+            load_file_critic_2 = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_2_UAV_TD3'
+            )
+    elif DRL_ALGO == 'ddpg':
+        agent_1.load_models(
+            load_file_actor = f'data/storage/seed/{SPLIT_IDX}' + '/Actor_G_and_Phi_ddpg',
+            load_file_critic = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_G_and_Phi_ddpg'
+            )
+        agent_2.load_models(
+            load_file_actor = f'data/storage/seed/{SPLIT_IDX}' + '/Actor_UAV_ddpg',
+            load_file_critic = f'data/storage/seed/{SPLIT_IDX}' + '/Critic_UAV_ddpg'
+            )
 
 meta_dic = {}
 print("***********************system information******************************")
