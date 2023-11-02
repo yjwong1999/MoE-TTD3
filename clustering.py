@@ -245,7 +245,7 @@ x2 = sim_matrix
 # print(sim_matrix)
 # x3 = sim_matrix
 
-
+# https://discuss.pytorch.org/t/spearmans-correlation/91931/5
 def _get_ranks(x: torch.Tensor) -> torch.Tensor:
     tmp = x.argsort()
     ranks = torch.zeros_like(tmp).cuda()
