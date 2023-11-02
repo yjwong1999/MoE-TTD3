@@ -1,0 +1,68 @@
+# 5 perform FL
+print("FEDERATED LEARNING\n")
+
+# 5.1 get all netwworks in agent 1 and 2
+agent_1_nets = [
+            agent_1.actor,
+            agent_1.critic_1,
+            agent_1.critic_2,
+            agent_1.target_actor,
+            agent_1.target_critic_1,
+            agent_1.target_critic_2,
+            ]
+agent_2_nets = [
+            agent_2.actor,
+            agent_2.critic_1,
+            agent_2.critic_2,
+            agent_2.target_actor,
+            agent_2.target_critic_1,
+            agent_2.target_critic_2,
+            ]
+
+
+# 5.2 perform FL on agent 1
+for i in range(len(agent_1_params)): # i is the 6 networks in agent
+    params = agent_1_params[i]
+
+    new_param = None
+    for param_name in params:
+        alist = [ all_agent_1_params[j][i][param_name][None] for j in range(TASK_NUM) ] # j is task number
+        new_param = torch.stack(alist, dim=0).sum(dim=0).sum(dim=0)
+        new_param /= TASK_NUM
+        params[param_name] = new_param
+
+    agent_1_nets[i].load_state_dict(params)
+
+# 5.3 perform FL on agent 2
+for i in range(len(agent_2_params)):
+    params = agent_2_params[i]
+
+    new_param = None
+    for param_name in params:
+        alist = [ all_agent_2_params[j][i][param_name][None] for j in range(TASK_NUM) ]
+        new_param = torch.stack(alist, dim=0).sum(dim=0).sum(dim=0)
+        new_param /= TASK_NUM
+        params[param_name] = new_param
+
+    agent_2_nets[i].load_state_dict(params)
+
+
+# 5.4 change checkpoint name
+for i in range(len(agent_1_params)):
+    agent_1_nets[i].checkpoint_file = agent_1_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{TASK_NUM}', f'{SPLIT_IDX}')
+    print(agent_1_nets[i].checkpoint_file)
+for i in range(len(agent_2_params)):
+    agent_2_nets[i].checkpoint_file = agent_2_nets[i].checkpoint_file.replace('test', 'seed').replace(f'{TASK_NUM}', f'{SPLIT_IDX}')
+    print(agent_2_nets[i].checkpoint_file)
+
+
+# 5.5 save FedAvg checkpoints
+dirname = os.path.dirname(agent_2_nets[i].checkpoint_file)
+rootname = os.path.dirname(dirname)
+if not os.path.isdir(rootname):
+    os.mkdir(rootname)
+if not os.path.isdir(dirname):
+    os.mkdir(dirname)
+
+agent_1.save_models()
+agent_2.save_models()
