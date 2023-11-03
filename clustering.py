@@ -385,4 +385,8 @@ linkage = ["ward", "average", "complete", "single"]
 np.random.seed(0)
 clustering = AgglomerativeClustering(linkage=linkage[2], n_clusters=CLUSTER_NUM)
 clustering.fit(X)
-print(clustering.labels_)
+
+for i, label in enumerate(clustering.labels_):
+    idx = TASK_IDX[i]
+    reward = results[str(idx)]['reward']
+    print(f'Task {idx:02d}: cluster {label:02d}, reward {reward}')
