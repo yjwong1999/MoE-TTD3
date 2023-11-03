@@ -394,10 +394,10 @@ clustering.fit(X)
 
 print('\n\nClusters:\n')
 for label in list(set(clustering.labels_)):
+    label += 1
     print(f'Cluster {label}')
     for i in range(TASK_NUM):
         if clustering.labels_[i] == label:
             idx = TASK_IDX[i]
-            label += 1
             reward = results[str(idx)]['reward']
             print(f'Task {idx:02d}: cluster {label:02d}, reward {reward}')
